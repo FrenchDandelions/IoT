@@ -1,2 +1,1 @@
-config.vm.box = "ubuntu/trusty64"
-  config.vm.box_version = "20191107.0.0"
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" K3S_TOKEN=12345 sh -s || echo "Failed to install K3s server"

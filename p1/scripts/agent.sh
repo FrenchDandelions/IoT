@@ -1,0 +1,1 @@
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent" K3S_TOKEN="mypassword" K3S_URL=https://192.168.56.110:6443 sh - || echo "Failed to install K3s agent"

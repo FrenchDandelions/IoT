@@ -6,46 +6,45 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-    # The most common configuration options are documented and commented below.
-    # For a complete reference, please see the online documentation at
-    # https://docs.vagrantup.com.
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "debian/bookworm64"
+  # config.vm.box_version = "12.20250126.1"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = "2"
+  end
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
   
-    # Every Vagrant development environment requires a box. You can search for
-    # boxes at https://vagrantcloud.com/search.
-    config.vm.box = "ubuntu/trusty64"
-    config.vm.box_version = "20191107.0.0"
-    # Disable automatic box update checking. If you disable this, then
-    # boxes will only be checked for updates when the user runs
-    # `vagrant box outdated`. This is not recommended.
-    # config.vm.box_check_update = false
-    
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
-    config.vm.define "tholeS" do |control|
-        control.vm.hostname = "tholeS"
-        control.vm.network "private_network", ip: "192.168.56.110"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "tholeS"]
-            v.memory = "1024"
-            v.cpus = "1"
-        end
-        config.vm.provision "shell", inline: <<-SHELL
-            echo "let's start with server"
-        SHELL
-        control.vm.provision "shell", path: "./scripts/server.sh"
-    end
-  
-    config.vm.define "tholeSW" do |control|
-        control.vm.hostname = "tholeSW"
-        control.vm.network "private_network", ip: "192.168.56.111"
-        control.vm.provider "virtualbox" do |v|
-            v.customize ["modifyvm", :id, "--name", "tholeSW"]
-            v.memory = "1024"
-            v.cpus = "1"
-        end
-        config.vm.provision "shell", inline: <<-SHELL
-            echo "let's start with worker"
-        SHELL
-        control.vm.provision "shell", path: "./scripts/worker.sh"
-    end
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  config.vm.define "tholeS" do |control|
+      control.vm.hostname = "tholeS"
+      control.vm.network "private_network", ip: "192.168.56.110"
+      control.vm.provider "virtualbox" do |vb|
+          vb.customize ["modifyvm", :id, "--name", "tholeS"]
+          vb.memory = "1024"
+          vb.cpus = "1"
+      end
+      control.vm.provision "shell", path: "./scripts/server.sh"
+  end
+
+  config.vm.define "tholeSW" do |control|
+      control.vm.hostname = "tholeSW"
+      control.vm.network "private_network", ip: "192.168.56.111"
+      control.vm.provider "virtualbox" do |vb|
+          vb.customize ["modifyvm", :id, "--name", "tholeSW"]
+          vb.memory = "1024"
+          vb.cpus = "1"
+      end
+      control.vm.provision "shell", path: "./scripts/agent.sh"
+  end
 end
