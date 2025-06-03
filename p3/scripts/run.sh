@@ -10,6 +10,7 @@ k3d cluster create $CLUSTER_NAME -p $CLUSTER_PORT:$CLUSTER_PORT -p $APP_PORT
 
 kubectl get ns $NAMESPACE_ARGOCD || kubectl create namespace $NAMESPACE_ARGOCD
 kubectl apply -n $NAMESPACE_ARGOCD -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl -n $NAMESPACE_ARGOCD wait --for=condition=available --timeout=300s deployment argocd-server
 kubectl apply -n $NAMESPACE_ARGOCD -k patchs
 kubectl apply -n $NAMESPACE_ARGOCD -f confs
 
