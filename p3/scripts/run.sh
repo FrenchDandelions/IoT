@@ -3,8 +3,10 @@ set -e
 
 CLUSTER_NAME="default"
 CLUSTER_PORT=443
+APP_NAME="wil-playground"
 APP_PORT="8888:30013@loadbalancer"
 NAMESPACE_ARGOCD="argocd"
+
 
 k3d cluster create $CLUSTER_NAME -p $CLUSTER_PORT:$CLUSTER_PORT -p $APP_PORT 
 
@@ -28,5 +30,6 @@ kubectl wait --for=condition=available --timeout=300s deployment -n $NAMESPACE_A
 ARGOCD_PASSWORD=$(kubectl -n $NAMESPACE_ARGOCD get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
 echo "Argo CD admin password: $ARGOCD_PASSWORD"
 
+argocd app sync $APP_NAME --insecure --grpc-web
 # Port-forward Argo CD server so you can access the UI on localhost:8080
 kubectl -n $NAMESPACE_ARGOCD port-forward svc/argocd-server 8080:80
