@@ -20,6 +20,11 @@ kubectl patch deployment argocd-server -n $NAMESPACE_ARGOCD --type='json' -p='[{
 
 kubectl -n $NAMESPACE_ARGOCD wait --for=condition=available --timeout=300s deployment argocd-server
 
+# Patch argocd-application-controller to reduce repo cache TTL to 30s
+kubectl patch deployment argocd-application-controller -n $NAMESPACE_ARGOCD --type='json' -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--repo-server-cache-ttl=15s"}]'
+
+kubectl -n $NAMESPACE_ARGOCD wait --for=condition=available --timeout=300s deployment argocd-server
+
 kubectl apply -n $NAMESPACE_ARGOCD -f confs
 
 kubectl config set-context --current --namespace=$NAMESPACE_ARGOCD
@@ -30,6 +35,5 @@ kubectl wait --for=condition=available --timeout=300s deployment -n $NAMESPACE_A
 ARGOCD_PASSWORD=$(kubectl -n $NAMESPACE_ARGOCD get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
 echo "Argo CD admin password: $ARGOCD_PASSWORD"
 
-argocd app sync $APP_NAME --insecure --grpc-web
 # Port-forward Argo CD server so you can access the UI on localhost:8080
 kubectl -n $NAMESPACE_ARGOCD port-forward svc/argocd-server 8080:80
