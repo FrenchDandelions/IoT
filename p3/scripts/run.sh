@@ -20,11 +20,6 @@ kubectl patch deployment argocd-server -n $NAMESPACE_ARGOCD --type='json' -p='[{
 
 kubectl -n $NAMESPACE_ARGOCD wait --for=condition=available --timeout=300s deployment argocd-server
 
-# Patch argocd-application-controller to reduce repo cache TTL to 30s
-kubectl -n argocd patch deployment argocd-repo-server --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args/1","value":"--repo-cache-expiration=30s"}]'
-
-kubectl -n $NAMESPACE_ARGOCD wait --for=condition=available --timeout=300s deployment argocd-server
-
 kubectl apply -n $NAMESPACE_ARGOCD -f confs
 
 kubectl config set-context --current --namespace=$NAMESPACE_ARGOCD
