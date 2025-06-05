@@ -29,11 +29,11 @@ kubectl apply -f confs
 
 kubectl wait --for=condition=available --timeout=300s deployment -l app.kubernetes.io/part-of=argocd
 
-argocd login --core
-
-kubectl get ns $APP_DEST_NAMESPACE || kubectl create namespace $APP_DEST_NAMESPACE && echo "${GREEN} * Creating $APP_DEST_NAMESPACE namespace${RESET}"
-
-argocd app create "$APP_NAME" --repo "$APP_REPO" --path "$APP_PATH" --dest-server "$APP_DEST_SERVER" --sync-policy automated --dest-namespace "$APP_DEST_NAMESPACE"
+# argocd login --core
+# 
+# kubectl get ns $APP_DEST_NAMESPACE || kubectl create namespace $APP_DEST_NAMESPACE && echo "${GREEN} * Creating $APP_DEST_NAMESPACE namespace${RESET}"
+# 
+# argocd app create "$APP_NAME" --repo "$APP_REPO" --path "$APP_PATH" --dest-server "$APP_DEST_SERVER" --sync-policy automated --dest-namespace "$APP_DEST_NAMESPACE"
 
 # Retrieve and display Argo CD admin password
 ARGOCD_PASSWORD=$(kubectl -n $NAMESPACE_ARGOCD get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
