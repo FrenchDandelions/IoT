@@ -4,9 +4,12 @@ set -e
 CLUSTER_NAME="default"
 CLUSTER_PORT=443
 APP_NAME="wil-playground"
-APP_PORT="8888:30013@loadbalancer"
+APP_PORT="8888:30013"
+APP_DEST_NAMESPACE="dev"
+APP_DEST_SERVER="https://kubernetes.default.svc"
 NAMESPACE_ARGOCD="argocd"
-
+APP_PATH="development"
+APP_REPO="https://github.com/FrenchDandelions/IoT-argocd"
 
 k3d cluster create $CLUSTER_NAME -p $CLUSTER_PORT:$CLUSTER_PORT -p $APP_PORT 
 
@@ -25,6 +28,12 @@ kubectl apply -n $NAMESPACE_ARGOCD -f confs
 kubectl config set-context --current --namespace=$NAMESPACE_ARGOCD
 
 kubectl wait --for=condition=available --timeout=300s deployment -n $NAMESPACE_ARGOCD argocd-server
+
+argocd login --core
+
+kubectl get ns $APP_DEST_NAMESPACE || kubectl create namespace $APP_DEST_NAMESPACE && echo "${GREEN} * Creating $APP_DEST_NAMESPACE namespace${RESET}"
+
+argocd app create "$APP_NAME" --repo "$APP_REPO" --path "$APP_PATH" --dest-server "$APP_DEST_SERVER" --sync-policy automated --dest-namespace "$APP_DEST_NAMESPACE"
 
 # Retrieve and display Argo CD admin password
 ARGOCD_PASSWORD=$(kubectl -n $NAMESPACE_ARGOCD get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode)
